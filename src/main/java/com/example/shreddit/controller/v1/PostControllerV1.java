@@ -11,6 +11,11 @@ public class PostControllerV1 {
         return "Posts";
     }
 
+    @GetMapping("/{id}")
+    public String getPost(@PathVariable Long id) {
+        return "Post";
+    }
+
     @PostMapping
     public String createPost() {
         return "Post created";

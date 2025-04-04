@@ -1,18 +1,40 @@
 package com.example.shreddit.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
+@Table(name = "users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // TODO: implementar unique constraint para username e para e-mail
+    @Column(unique = true, nullable = false)
     private String username;
+
+    // password hash
+    @Column(nullable = false, length = 60)
     private String password;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(name = "is_staff", nullable = false)
     private boolean isStaff;
+
+    // password encoder
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    // Empty constructor is a must for Hibernate
+    protected User() {}
+
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.email = email;
+        this.setPassword(password);
+    }
 
     public Long getId() {
         return id;
@@ -41,13 +63,16 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
-        if (password.length() < 8) {
+    public void setPassword(String plainPassword) {
+        if (plainPassword.length() < 8) {
             throw new IllegalArgumentException("Password must be at least 8 characters long");
+        } else if (plainPassword.length() > 40) {
+            throw new IllegalArgumentException("Password must be at most 40 characters long");
+        } else if (!plainPassword.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Password must only contain letters, numbers, and underscores");
         }
 
-        // TODO: implementar criptografia de senha com salt
-        this.password = password;
+        this.password = passwordEncoder.encode(plainPassword);
     }
 
     public String getEmail() {
