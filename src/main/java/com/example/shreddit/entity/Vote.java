@@ -1,19 +1,45 @@
 package com.example.shreddit.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
+
+
 
 @Entity
 public class Vote {
     @Id
     private Long id;
 
+    @Column(name = "is_positive", nullable = false)
     private boolean isPositive;
-    private String contentType;
-    private Long contentId;
-    private Long userId;
+
+    // I'll overload the constructor. Both posts and comments can be voted
+    @ManyToOne
+    @JoinColumn(name = "post_id", nullable = true)
+    private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_id", nullable = true)
+    private Comment comment;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    protected Vote() {}  // Needed for Hibernate
+
+    public Vote(boolean isPositive, Post post, User user) {
+        this.isPositive = isPositive;
+        this.post = post;
+        this.user = user;
+    }
+
+    public Vote(boolean isPositive, Comment comment, User user) {
+        this.isPositive = isPositive;
+        this.comment = comment;
+        this.user = user;
+    }
 
     public Long getId() {
         return id;
@@ -31,31 +57,27 @@ public class Vote {
         isPositive = positive;
     }
 
-    public String getContentType() {
-        return contentType;
+    public User getUser() {
+        return user;
     }
 
-    public void setContentType(String contentType) {
-        if (!Objects.equals(contentType, "post") && !Objects.equals(contentType, "comment")) {
-            throw new IllegalArgumentException("contentType must be 'post' or 'comment'");
-        }
-
-        this.contentType = contentType;
+    public void setUser(User user) {
+        this.user = user;
     }
 
-    public Long getContentId() {
-        return contentId;
+    public Post getPost() {
+        return post;
     }
 
-    public void setContentId(Long contentId) {
-        this.contentId = contentId;
+    public void setPost(Post post) {
+        this.post = post;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Comment getComment() {
+        return comment;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setComment(Comment comment) {
+        this.comment = comment;
     }
 }

@@ -1,20 +1,70 @@
 package com.example.shreddit.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.util.Objects;
+import java.util.Date;
 
+/*
+* how this entity works:
+*   1. an user (author) can report either a comment or a post or another user (offender)
+*   2. a report must have a reason
+*   3. a report must have an author
+*   4. a report must have an offender
+*   5. if either a comment or a post is reported, the offender is the author of the comment or the author of the post
+*   6. once action has been taken at the report, the report is marked as resolved
+* */
 @Entity
 public class Report {
     @Id
     private Long id;
 
-    private Long postId;
-    private String commentId;
-    private String offenderUsername;
+    @ManyToOne
+    @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
+    private User author;
+
+    @Column(name = "reason", nullable = false)
     private String reason;
-    private Long authorId;
+
+    @ManyToOne
+    @JoinColumn(name = "comment_id", referencedColumnName = "id", nullable = true)
+    private Comment comment;
+
+    @ManyToOne
+    @JoinColumn(name = "post_id", referencedColumnName = "id", nullable = true)
+    private Post post;
+
+    @ManyToOne
+    @JoinColumn(name = "offender_id", referencedColumnName = "id", nullable = false)
+    private User offender;
+
+    @Column(name = "is_resolved", nullable = false)
+    private boolean isResolved = false;
+
+    @CreationTimestamp
+    private Date createdAt;
+
+    public Report() {}  // necessary for Hibernate
+
+    public Report(User author, String reason, Comment comment) {
+        this.author = author;
+        this.reason = reason;
+        this.comment = comment;
+        this.offender = comment.getAuthor();
+    }
+
+    public Report(User author, String reason, Post post) {
+        this.author = author;
+        this.reason = reason;
+        this.post = post;
+        this.offender = post.getAuthor();
+    }
+
+    public Report(User author, String reason, User offender) {
+        this.author = author;
+        this.reason = reason;
+        this.offender = offender;
+    }
 
     public Long getId() {
         return id;
@@ -24,28 +74,12 @@ public class Report {
         this.id = id;
     }
 
-    public Long getPostId() {
-        return postId;
+    public User getAuthor() {
+        return author;
     }
 
-    public void setPostId(Long postId) {
-        this.postId = postId;
-    }
-
-    public String getCommentId() {
-        return commentId;
-    }
-
-    public void setCommentId(String commentId) {
-        this.commentId = commentId;
-    }
-
-    public String getOffenderUsername() {
-        return offenderUsername;
-    }
-
-    public void setOffenderUsername(String offenderUsername) {
-        this.offenderUsername = offenderUsername;
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public String getReason() {
@@ -56,11 +90,39 @@ public class Report {
         this.reason = reason;
     }
 
-    public Long getAuthorId() {
-        return authorId;
+    public Comment getComment() {
+        return comment;
     }
 
-    public void setAuthorId(Long authorId) {
-        this.authorId = authorId;
+    public void setComment(Comment comment) {
+        this.comment = comment;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
+    public User getOffender() {
+        return offender;
+    }
+
+    public void setOffender(User offender) {
+        this.offender = offender;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public boolean isResolved() {
+        return isResolved;
+    }
+
+    public void setResolved(boolean resolved) {
+        isResolved = resolved;
     }
 }

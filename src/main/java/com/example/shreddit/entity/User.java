@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -23,6 +25,12 @@ public class User {
 
     @Column(name = "is_staff", nullable = false)
     private boolean isStaff;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
+    private List<Comment> comments;
 
     // password encoder
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -89,5 +97,13 @@ public class User {
 
     public void setStaff(boolean staff) {
         isStaff = staff;
+    }
+
+    public List<Post> getPosts() {
+        return posts;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
     }
 }
