@@ -1,18 +1,29 @@
 package com.example.shreddit.controller.v1;
 
+import com.example.shreddit.dto.response.PostListResponseDTO;
+import com.example.shreddit.service.PostService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
 public class PostControllerV1 {
+    private final PostService postService;
 
-    @GetMapping
-    public String getPosts() {
-        return "Posts";
+    @Autowired
+    public PostControllerV1(PostService postService) {
+        this.postService = postService;
     }
 
-    @GetMapping("/{id}")
-    public String getPost(@PathVariable Long id) {
+    @GetMapping
+    public List<PostListResponseDTO> getPosts() {
+        return postService.getPosts();
+    }
+
+    @GetMapping("/{slug}")
+    public String getPost(@PathVariable String slug) {
         return "Post";
     }
 
@@ -21,13 +32,13 @@ public class PostControllerV1 {
         return "Post created";
     }
 
-    @PutMapping("/{id}")
-    public String updatePost(@PathVariable Long id) {
+    @PutMapping("/{slug}")
+    public String updatePost(@PathVariable String slug) {
         return "Post updated";
     }
 
-    @DeleteMapping("/{id}")
-    public String deletePost(@PathVariable Long id) {
+    @DeleteMapping("/{slug}")
+    public String deletePost(@PathVariable String slug) {
         return "Post deleted";
     }
 }

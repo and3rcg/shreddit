@@ -1,8 +1,10 @@
 package com.example.shreddit.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.lang.Contract;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,6 +38,9 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Report> reports;
+
+    @CreationTimestamp
+    private Date createdAt;
 
     protected Post() {}  // Needed for Hibernate
 
@@ -74,6 +79,7 @@ public class Post {
         return slug;
     }
 
+    // TODO: add some random string to the slug
     public void setSlug() {
         this.slug = title.replace(" ", "-").toLowerCase();
     }
@@ -113,5 +119,9 @@ public class Post {
 
     public List<Comment> getComments() {
         return comments;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
     }
 }

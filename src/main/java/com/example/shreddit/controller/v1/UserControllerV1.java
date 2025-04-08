@@ -3,6 +3,7 @@ package com.example.shreddit.controller.v1;
 import com.example.shreddit.dto.request.UserCreateRequestDTO;
 import com.example.shreddit.dto.response.UserResponseDTO;
 import com.example.shreddit.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserControllerV1 {
     private final UserService userService;
 
+    @Autowired
     public UserControllerV1(UserService service) {
         this.userService = service;
     }
