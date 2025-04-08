@@ -22,12 +22,12 @@ public class Post {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, updatable = false)
     private String slug;
 
     // you gotta specify the name of the column to join, and don't forget to add OneToMany in the target entity (User in this case)
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = true, referencedColumnName = "id")
+    @JoinColumn(name = "author_id", nullable = true, referencedColumnName = "id", updatable = false)
     private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
@@ -48,6 +48,12 @@ public class Post {
         this.title = title;
         this.content = content;
         this.author = author;
+        setSlug();
+    }
+
+    public Post(String title, String content) {
+        this.title = title;
+        this.content = content;
         setSlug();
     }
 
