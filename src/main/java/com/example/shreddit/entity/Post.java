@@ -17,7 +17,7 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(unique = true, nullable = false)
@@ -84,6 +84,10 @@ public class Post {
 
     public void setAuthor(User author) {
         this.author = author;
+    }
+
+    public List<Vote> getVotes() {
+        return votes;
     }
 
     public String toString() {

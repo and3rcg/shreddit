@@ -7,6 +7,10 @@ import java.util.Objects;
 
 
 @Entity
+@Table(name = "votes", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "post_id"}),
+        @UniqueConstraint(columnNames = {"user_id", "comment_id"})
+    })
 public class Vote {
     @Id
     private Long id;
