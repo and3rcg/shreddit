@@ -13,6 +13,8 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // TODO: adicionar campo auto-referenciado para representar respostas a um comentário
+
     @Column(nullable = false)
     private String text;
 

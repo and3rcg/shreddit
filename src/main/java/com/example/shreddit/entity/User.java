@@ -44,6 +44,13 @@ public class User {
         this.setPassword(password);
     }
 
+    public User(String username, String password, String email, boolean isStaff) {
+        this.username = username;
+        this.email = email;
+        this.isStaff = isStaff;
+        this.setPassword(password);
+    }
+
     public Long getId() {
         return id;
     }
