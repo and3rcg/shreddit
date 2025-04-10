@@ -1,14 +1,18 @@
 package com.example.shreddit.entity;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,14 +27,23 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(name = "is_staff", nullable = false)
-    private boolean isStaff;
+    @Column(name = "role", nullable = false)
+    private UserRole role;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (this.role == UserRole.ADMIN) {
+            return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USER"));
+        } else {
+            return List.of(new SimpleGrantedAuthority("USER"));
+        }
+    }
 
     // password encoder
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -42,12 +55,13 @@ public class User {
         this.username = username;
         this.email = email;
         this.setPassword(password);
+        this.setRole(UserRole.USER);
     }
 
-    public User(String username, String password, String email, boolean isStaff) {
+    public User(String username, String password, String email, UserRole role) {
         this.username = username;
         this.email = email;
-        this.isStaff = isStaff;
+        this.role = role;
         this.setPassword(password);
     }
 
@@ -98,12 +112,12 @@ public class User {
         this.email = email;
     }
 
-    public boolean isStaff() {
-        return isStaff;
+    public UserRole getRole() {
+        return role;
     }
 
-    public void setStaff(boolean staff) {
-        isStaff = staff;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public List<Post> getPosts() {

@@ -62,4 +62,6 @@ public class PostControllerV1 {
     public CommentResponseDTO createComment(@PathVariable Long slug, @RequestBody CommentRequestDTO request) {
         return commentService.createComment(request);
     }
+
+    // TODO: adicionar controllers PUT e DELETE para comentários
 }

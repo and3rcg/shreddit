@@ -4,6 +4,7 @@ import com.example.shreddit.dto.request.UserCreateRequestDTO;
 import com.example.shreddit.dto.response.UserResponseDTO;
 import com.example.shreddit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,27 +19,30 @@ public class UserControllerV1 {
 
     @GetMapping("/me")
     public String getMe() {
+        // TODO: adicionar rotina de pegar o usuário executante aqui
         return "Me";
     }
 
     @PutMapping("/me")
     public String updateMe() {
+        // TODO: adicionar rotina de pegar o usuário executante aqui
         return "Me updated";
-    }
-
-    @PostMapping("/create")
-    public UserResponseDTO create(@RequestBody UserCreateRequestDTO request) {
-        return this.userService.createUser(request);
     }
 
     @DeleteMapping
     public String deleteMe() {
+        // TODO: adicionar rotina de pegar o usuário executante aqui
         return "Me deleted";
     }
 
-    @DeleteMapping("/{username}")
+    @DeleteMapping("/profile/{username}")
     public String deleteByUsername(@PathVariable String username) {
-        // checar se o usuário executante é staff
+        // checar se o usuário executante tem role admin
         return "User " + username + " deleted";
+    }
+
+    @GetMapping("/profile/{username}")
+    public UserDetails getByUsername(@PathVariable String username) {
+        return userService.findUserByUsername(username);
     }
 }

@@ -5,6 +5,7 @@ import com.example.shreddit.dto.response.UserResponseDTO;
 import com.example.shreddit.entity.User;
 import com.example.shreddit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,13 +28,12 @@ public class UserService {
         return new UserResponseDTO(user);
     }
 
-    public User findUserByUsername(String username) {
-        Optional<User> user = repository.findByUsername(username);
-        return user.orElseThrow(() -> new IllegalArgumentException("User not found"));
+    public UserDetails findUserByUsername(String username) {
+        return (User) repository.findByUsername(username);
     }
 
     public void deleteUser(String username) {
-        User user = findUserByUsername(username);
-        repository.delete(user);
+        UserDetails user = findUserByUsername(username);
+        repository.delete((User) user);
     }
 }

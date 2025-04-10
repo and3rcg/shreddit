@@ -9,9 +9,11 @@ import com.example.shreddit.repository.CommentRepository;
 import com.example.shreddit.repository.PostRepository;
 import com.example.shreddit.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
