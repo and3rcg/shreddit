@@ -5,8 +5,10 @@ import com.example.shreddit.dto.response.CommentResponseDTO;
 import com.example.shreddit.dto.response.PostDetailsResponseDTO;
 import com.example.shreddit.dto.response.PostListResponseDTO;
 import com.example.shreddit.entity.Post;
+import com.example.shreddit.entity.User;
 import com.example.shreddit.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +18,13 @@ public class PostService {
     private final PostRepository postRepository;
 
     private final CommentService commentService;
+    private final UserService userService;
 
     @Autowired
-    public PostService(PostRepository postRepository, CommentService commentService) {
+    public PostService(PostRepository postRepository, CommentService commentService, UserService userService) {
         this.postRepository = postRepository;
         this.commentService = commentService;
+        this.userService = userService;
     }
 
     public List<PostListResponseDTO> getPosts() {
@@ -32,8 +36,9 @@ public class PostService {
         return new PostDetailsResponseDTO(postObj);
     }
 
-    public PostDetailsResponseDTO createPost(PostRequestDTO post) {
-        Post postObj = postRepository.save(new Post(post.title(), post.content()));
+    public PostDetailsResponseDTO createPost(PostRequestDTO post, String username) {
+        User author = userService.findUserByUsername(username);
+        Post postObj = postRepository.save(new Post(post.title(), post.content(), author));
         return new PostDetailsResponseDTO(postObj);
     }
 

@@ -28,12 +28,12 @@ public class UserService {
         return new UserResponseDTO(user);
     }
 
-    public UserDetails findUserByUsername(String username) {
-        return (User) repository.findByUsername(username);
+    public User findUserByUsername(String username) {
+        return repository.findByUsername(username);
     }
 
     public void deleteUser(String username) {
-        UserDetails user = findUserByUsername(username);
-        repository.delete((User) user);
+        User user = findUserByUsername(username);
+        repository.delete(user);
     }
 }

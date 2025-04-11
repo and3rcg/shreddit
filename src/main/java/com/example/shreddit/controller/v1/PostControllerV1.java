@@ -8,8 +8,14 @@ import com.example.shreddit.dto.response.PostListResponseDTO;
 import com.example.shreddit.service.CommentService;
 import com.example.shreddit.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -35,9 +41,15 @@ public class PostControllerV1 {
     }
 
     @PostMapping
-    public PostDetailsResponseDTO createPost(@RequestBody PostRequestDTO request) {
-        // TODO: pegar o usuário logado e enviar ele ao PostService. por enquanto está como usuário nulo
-        return postService.createPost(request);
+    public ResponseEntity<PostDetailsResponseDTO> createPost(@RequestBody PostRequestDTO request, @AuthenticationPrincipal UserDetails userDetails) {
+        PostDetailsResponseDTO post = postService.createPost(request, userDetails.getUsername());
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(post.slug())
+                .toUri();
+        return ResponseEntity.created(location).body(post);
     }
 
     @PutMapping("/{slug}")

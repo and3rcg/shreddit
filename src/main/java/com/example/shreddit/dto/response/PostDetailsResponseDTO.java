@@ -30,6 +30,9 @@ public record PostDetailsResponseDTO(
     }
 
     public static int calculateScore(List<Vote> votes) {
+        if (votes == null) {
+            return 0;
+        }
         return votes.stream().mapToInt(vote -> vote.isPositive() ? 1 : -1).sum();
     }
 }
