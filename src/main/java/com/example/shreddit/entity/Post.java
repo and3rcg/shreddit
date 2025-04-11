@@ -7,6 +7,7 @@ import org.springframework.lang.Contract;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Entity
 public class Post {
@@ -85,9 +86,10 @@ public class Post {
         return slug;
     }
 
-    // TODO: add some random string to the slug
+    // generates a random suffix and appends it to the slugified title
     public void setSlug() {
-        this.slug = title.replace(" ", "-").toLowerCase();
+        String randomSuffix = "-" + UUID.randomUUID().toString().substring(0, 5).toLowerCase();
+        this.slug = title.replace(" ", "-").toLowerCase() + randomSuffix;
     }
 
     public User getAuthor() {

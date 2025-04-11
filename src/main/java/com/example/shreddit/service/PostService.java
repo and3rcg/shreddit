@@ -8,7 +8,6 @@ import com.example.shreddit.entity.Post;
 import com.example.shreddit.entity.User;
 import com.example.shreddit.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
