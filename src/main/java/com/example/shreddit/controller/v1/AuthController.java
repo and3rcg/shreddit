@@ -36,7 +36,6 @@ public class AuthController {
         UsernamePasswordAuthenticationToken loginInput = new UsernamePasswordAuthenticationToken(request.username(), request.password());
 
         Authentication auth = this.authenticationManager.authenticate(loginInput);
-        System.out.println("xok");
         var token = authService.generateToken((User) auth.getPrincipal());
         return ResponseEntity.ok(new LoginResponseDTO(token));
     }

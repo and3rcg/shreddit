@@ -1,5 +1,6 @@
 package com.example.shreddit.config;
 
+import com.example.shreddit.entity.User;
 import com.example.shreddit.repository.UserRepository;
 import com.example.shreddit.service.AuthService;
 import jakarta.servlet.FilterChain;
@@ -28,7 +29,7 @@ public class SecurityFilter extends OncePerRequestFilter {
         var token = this.recoverToken(request);
         if (token != null) {
             var login = authService.validateToken(token);
-            UserDetails user = repository.findByUsername(login);
+            User user = repository.findByUsername(login);
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

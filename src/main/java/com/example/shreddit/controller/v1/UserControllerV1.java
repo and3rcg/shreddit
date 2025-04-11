@@ -1,7 +1,5 @@
 package com.example.shreddit.controller.v1;
 
-import com.example.shreddit.dto.request.UserCreateRequestDTO;
-import com.example.shreddit.dto.response.UserResponseDTO;
 import com.example.shreddit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

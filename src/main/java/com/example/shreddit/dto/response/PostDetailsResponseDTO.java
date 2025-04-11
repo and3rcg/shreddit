@@ -13,7 +13,8 @@ public record PostDetailsResponseDTO(
         Date createdAt,
         String slug,
         UserResponseDTO author,
-        List<Comment> comments, int score
+        List<Comment> comments,
+        int score
 ) {
     public PostDetailsResponseDTO(Post post) {
         this(

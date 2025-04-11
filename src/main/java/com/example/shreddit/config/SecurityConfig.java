@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -20,32 +21,41 @@ public class SecurityConfig {
     @Autowired
     SecurityFilter securityFilter;
 
+    // important: the order of the request matchers matter. make sure to put the more specific patterns at the top, and
+    // keep wildcards at the bottom
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                .csrf(csrf -> csrf.disable()) // disable CSRF for APIs
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/**/posts").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/**/posts/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "api/**/posts").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "api/**/posts/**/comments").permitAll()
-                    .requestMatchers(HttpMethod.POST, "api/**/posts/**/comments").hasRole("USER")
-                    .requestMatchers(HttpMethod.PUT, "api/**/posts/**/comments").hasRole("USER")
-                    .requestMatchers(HttpMethod.DELETE, "api/**/posts/**/comments").hasRole("USER")
-                    .requestMatchers(HttpMethod.PUT, "api/**/posts/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, "/api/**/posts/**").hasRole("ADMIN")
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize
+                // Public endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/auth/**", "POST")).permitAll()
 
-                    .requestMatchers(HttpMethod.GET, "/api/**/users/profile/**").hasRole("USER")
-                    .requestMatchers(HttpMethod.DELETE, "/api/**/users/profile/**").hasRole("ADMIN")
-                    .requestMatchers(HttpMethod.GET, "/api/**/users/me").hasRole("USER")
-                    .requestMatchers(HttpMethod.PUT, "/api/**/users/me").hasRole("USER")
-                    .anyRequest().authenticated()
-                    // TODO: cadastrar o resto dos endpoints. isso já é o bastante para a versão 0.1
-                )
-                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                // Users endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/me", "GET")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/me", "PUT")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/profile/**", "GET")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/users/profile/**", "DELETE")).hasRole("ADMIN")
+
+                // Posts endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts", "GET")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts", "POST")).hasRole("ADMIN")
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**", "GET")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**", "PUT")).hasRole("ADMIN")
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**", "DELETE")).hasRole("ADMIN")
+
+                // Comments endpoints
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**/comments", "GET")).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**/comments", "POST")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**/comments", "PUT")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/posts/**/comments", "DELETE")).authenticated()
+
+                // Catch-all
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
+            .build();
     }
 
     @Bean
