@@ -10,6 +10,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Collection;
 import java.util.List;
 
+// TODO: when implementing subshreds, add a "subscribedSubshreds" field to the user
+
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {

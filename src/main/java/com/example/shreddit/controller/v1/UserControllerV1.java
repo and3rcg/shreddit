@@ -1,7 +1,10 @@
 package com.example.shreddit.controller.v1;
 
+import com.example.shreddit.dto.response.UserMeResponseDTO;
+import com.example.shreddit.dto.response.UserResponseDTO;
 import com.example.shreddit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,21 +19,26 @@ public class UserControllerV1 {
     }
 
     @GetMapping("/me")
-    public String getMe() {
-        // TODO: adicionar rotina de pegar o usuário executante aqui
-        return "Me";
+    public ResponseEntity<UserMeResponseDTO> getMe(@AuthenticationPrincipal UserDetails userDetails) {
+        UserMeResponseDTO user = userService.getMe(userDetails);
+        return ResponseEntity.ok(user);
     }
 
     @PutMapping("/me")
-    public String updateMe() {
-        // TODO: adicionar rotina de pegar o usuário executante aqui
-        return "Me updated";
+    public ResponseEntity<UserResponseDTO> updateMe(@AuthenticationPrincipal UserDetails userDetails,
+                           @RequestBody UserCreateRequestDTO request) {
+        try {
+            UserResponseDTO user = userService.updateUser(userDetails, request);
+            return ResponseEntity.ok(user);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping
-    public String deleteMe() {
-        // TODO: adicionar rotina de pegar o usuário executante aqui
-        return "Me deleted";
+    public ResponseEntity deleteMe(@AuthenticationPrincipal UserDetails userDetails) {
+        userService.deleteUser(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/profile/{username}")
