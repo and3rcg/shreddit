@@ -2,6 +2,7 @@ package com.example.shreddit.dto.response;
 
 import com.example.shreddit.entity.Comment;
 import com.example.shreddit.entity.Post;
+import com.example.shreddit.entity.User;
 
 import java.util.List;
 
