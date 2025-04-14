@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
@@ -35,21 +33,17 @@ public class PostControllerV1 {
         return postService.getPosts();
     }
 
+    @PostMapping
+    public ResponseEntity<PostDetailsResponseDTO> createPost(@RequestBody PostRequestDTO request, @AuthenticationPrincipal UserDetails userDetails) {
+        System.out.println(userDetails);
+        PostDetailsResponseDTO post = postService.createPost(request, userDetails.getUsername());
+
+        return ResponseEntity.status(201).body(post);
+    }
+
     @GetMapping("/{slug}")
     public PostDetailsResponseDTO getPost(@PathVariable String slug) {
         return postService.getPost(slug);
-    }
-
-    @PostMapping
-    public ResponseEntity<PostDetailsResponseDTO> createPost(@RequestBody PostRequestDTO request, @AuthenticationPrincipal UserDetails userDetails) {
-        PostDetailsResponseDTO post = postService.createPost(request, userDetails.getUsername());
-
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(post.slug())
-                .toUri();
-        return ResponseEntity.created(location).body(post);
     }
 
     @PutMapping("/{slug}")
@@ -59,10 +53,10 @@ public class PostControllerV1 {
     }
 
     @DeleteMapping("/{slug}")
-    public String deletePost(@PathVariable String slug) {
+    public ResponseEntity deletePost(@PathVariable String slug) {
         // TODO: adicionar lógica para checar se o usuário logado é admin ou o autor do post para poder editar
         postService.deletePost(slug);
-        return "Post deleted";
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("{slug}/comments")
@@ -71,8 +65,9 @@ public class PostControllerV1 {
     }
 
     @PostMapping("/{slug}/comments")
-    public CommentResponseDTO createComment(@PathVariable Long slug, @RequestBody CommentRequestDTO request) {
-        return commentService.createComment(request);
+    public ResponseEntity<CommentResponseDTO> createComment(@PathVariable Long slug, @RequestBody CommentRequestDTO request) {
+        CommentResponseDTO comment = commentService.createComment(request);
+        return ResponseEntity.status(201).body(comment);
     }
 
     // TODO: adicionar controllers PUT e DELETE para comentários

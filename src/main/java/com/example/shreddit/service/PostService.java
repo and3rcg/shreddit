@@ -10,6 +10,7 @@ import com.example.shreddit.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.awt.*;
 import java.util.List;
 
 @Service
@@ -36,6 +37,7 @@ public class PostService {
     }
 
     public PostDetailsResponseDTO createPost(PostRequestDTO post, String username) {
+        System.out.println(username);
         User author = userService.findUserByUsername(username);
         Post postObj = postRepository.save(new Post(post.title(), post.content(), author));
         return new PostDetailsResponseDTO(postObj);
