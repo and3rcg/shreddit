@@ -1,9 +1,11 @@
 package com.example.shreddit.controller.v1;
 
+import com.example.shreddit.dto.request.UserCreateRequestDTO;
 import com.example.shreddit.dto.response.UserMeResponseDTO;
 import com.example.shreddit.dto.response.UserResponseDTO;
 import com.example.shreddit.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,7 @@ public class UserControllerV1 {
             UserResponseDTO user = userService.updateUser(userDetails, request);
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
